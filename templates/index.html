@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Password Strength Checker</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h2>Password Strength Checker</h2>
+
+    <input type="password" id="password" placeholder="Enter your password" />
+    <br>
+    <input type="checkbox" id="showPassword" onclick="togglePassword()"> Show Password
+    <br><br>
+
+    <button onclick="checkPassword()">Check Strength</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const passwordField = document.getElementById("password");
+      passwordField.type = passwordField.type === "password" ? "text" : "password";
+    }
+
+    async function checkPassword() {
+      const password = document.getElementById("password").value;
+      const response = await fetch('/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+      const data = await response.json();
+      document.getElementById("result").innerHTML = 
+        `<strong>${data.strength}</strong> 🔐<br>
+         ✅ Length: ${data.criteria.length}<br>
+         🔠 Uppercase: ${data.criteria.uppercase}<br>
+         🔡 Lowercase: ${data.criteria.lowercase}<br>
+         🔢 Digit: ${data.criteria.digit}<br>
+         🔣 Special Char: ${data.criteria.special}`;
+    }
+  </script>
+</body>
+</html>
